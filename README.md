@@ -1,317 +1,321 @@
 # CIS8
 
-**CIS8** is an 8-bit assembly language designed for the **LIS8 CPU**, an 8-bit CPU simulation i made in scratch. It provides a small set of instructions for manipulating memory, performing arithmetic, controlling program flow, and creating simple conditional logic.
+> **CIS8** is an 8-bit assembly language designed for the **LIS8 CPU**, an 8-bit CPU simulation made in Scratch.
 
-CIS8 is designed to be simple and close to the hardware. Programs are written using short instructions that operate directly on memory addresses.
+CIS8 provides a small set of instructions for:
 
-## 1. Basic Program Structure
+* Memory manipulation
+* Arithmetic
+* Program flow
+* Functions
+* Conditional logic
 
-A CIS8 program is made up of instructions executed sequentially.
+CIS8 is designed to be **simple and close to the hardware**. Programs are written using short instructions that operate directly on memory addresses.
 
-```asm
-ins 01,01
-add 01,02
-sub 01,02
-```
+---
 
-Each instruction normally contains:
+## 📖 Language Overview
+
+CIS8 has **8 keywords**:
+
+| Keyword | Purpose                               |
+| :-----: | ------------------------------------- |
+|  `ADD`  | Addition                              |
+|  `SUB`  | Subtraction                           |
+|  `INS`  | Insert a value into memory            |
+|  `MOV`  | Move a value between memory addresses |
+|  `CMP`  | Compare two memory addresses          |
+|  `JMP`  | Change the program counter            |
+|  `REL`  | Execute a function                    |
+|  `DEF`  | Define a function                     |
+
+Each keyword is used for a different arithmetic, logical, memory, or program-control function.
+
+---
+
+## ⚙️ Instruction Format
+
+CIS8 instructions are usually **8–7 characters long** and are structured as:
 
 ```text
-instruction operand,operand
+3-bit Opcode, 2-bit Operand, 2-bit Operand
 ```
-
-Operands are generally two-digit memory addresses.
-
-## 2. Comments
-
-CIS8 supports single-line comments using `/`.
-
-```asm
-/ This is a comment \
-```
-
-Multiline comments use `//` and `\\`.
-
-```asm
-// This is
-a multiline comment. \\
-```
-
-Comments are ignored by the compiler.
-
-## 3. Memory
-
-CIS8 programs work directly with memory addresses.
 
 For example:
-
-```asm
-ins 25,10
-```
-
-stores the value `25` in memory address `10`.
-
-Memory can then be used by arithmetic instructions:
-
-```asm
-add 10,11
-```
-
-The exact behavior of an instruction depends on the operation being performed.
-
-## 4. Instructions
-
-### INS
-
-```asm
-ins value,address
-```
-
-Stores a value in a memory address.
-
-Example:
-
-```asm
-ins 10,01
-```
-
-Memory address `01` now contains `10`.
-
----
-
-### ADD
-
-```asm
-add address,address
-```
-
-Adds the values associated with the two operands.
-
-Example:
 
 ```asm
 add 01,02
 ```
 
----
+The instruction contains:
 
-### SUB
-
-```asm
-sub address,address
+```text
+ADD | 01 | 02
+ ↑     ↑    ↑
+Opcode  A    B
 ```
 
-Subtracts the second operand from the first.
+---
 
-Example:
+# 🔧 Instructions
+
+## `ADD`
+
+```asm
+add 01,02
+```
+
+Adds two memory addresses.
+
+---
+
+## `SUB`
 
 ```asm
 sub 01,02
 ```
 
----
-
-### INC
-
-```asm
-inc address
-```
-
-Increments a memory value by `1`.
-
-Example:
-
-```asm
-inc 05
-```
-
-This increases the value stored at address `05`.
+Subtracts two memory addresses.
 
 ---
 
-### DEC
+## `INS`
 
 ```asm
-dec address
+ins 12,01
 ```
 
-Decrements a memory value by `1`.
+Inserts **Operand A** into the memory address specified by **Operand B**.
 
-Example:
+In this example:
 
-```asm
-dec 05
+```text
+12 → memory address 01
 ```
 
 ---
 
-### MOV
+## `MOV`
 
 ```asm
-mov source,destination
+mov 01,02
 ```
 
-Moves a value from one memory address to another.
-
-Example:
-
-```asm
-mov 01,05
-```
+Moves the value from memory address **A** to memory address **B**.
 
 ---
 
-### CMP
-
-```asm
-cmp address,address
-```
-
-Compares two values.
-
-A `CMP` can be followed by a conditional block:
-
-```asm
-cmp 02,03[
-inc 05 f
-]
-```
-
-The instructions marked with `f` execute when the comparison evaluates as equal.
-
-In this example, address `05` is incremented when addresses `02` and `03` contain equal values.
-
-The `f` suffix identifies a conditional instruction.
-
-## 5. Conditional Blocks
-
-A conditional block begins with `[` and ends with `]`.
-
-```asm
-cmp 01,02[
-add 01,03 f
-inc 05 f
-]
-```
-
-Instructions inside the block can be marked with `f`.
-
-The compiler can automatically add the `f` suffix to instructions inside a conditional block when it is omitted.
-
-For example:
-
-```asm
-cmp 01,02[
-inc 05
-]
-```
-
-can be compiled as:
+## `CMP`
 
 ```asm
 cmp 01,02
-inc 05f
 ```
 
-## 6. Program Flow
+Compares two memory addresses.
 
-### JMP
+If the comparison returns `0`, any following instructions marked with the `f` tag execute.
 
-```asm
-jmp address,00
-```
-
-Changes the program counter to the specified address.
+This essentially provides an **if statement**.
 
 Example:
+
+```asm
+cmp 01,02[
+ins 01,02 f
+]
+```
+
+If addresses `01` and `02` compare as equal, the `INS` instruction executes.
+
+---
+
+## `JMP`
 
 ```asm
 jmp 01,00
 ```
 
-`JMP` can be used to create loops and other forms of program flow.
+Sets the **program counter (PC)** to Operand A.
 
-## 7. Functions
+In this example:
 
-CIS8 provides `DEF` and `REL` for defining and calling functions.
-
-### DEF
-
-```asm
-def length,00
+```text
+PC = 01
 ```
 
-Defines a function with the specified length.
+---
 
-### REL
+## `REL`
 
 ```asm
-rel address,00
+rel 02,01
 ```
 
-Calls a function at the specified address and returns to the previous execution location.
+Executes a function at a specified address and then returns to the previous address.
 
-Function behavior depends on the CIS8 runtime and memory layout.
+---
 
-## 8. Example Program
-
-The following program increments memory address `05` whenever addresses `02` and `03` contain equal values:
+## `DEF`
 
 ```asm
+def 06,00
+```
+
+Creates a function with the length specified by Operand A.
+
+---
+
+# 💬 Comments
+
+CIS8 supports both single-line and multiline comments.
+
+### Single-line Comments
+
+Single-line comments use:
+
+```text
+/ ... \
+```
+
+Example:
+
+```asm
+/ This is a comment \
+```
+
+### Multiline Comments
+
+Multiline comments use:
+
+```text
+// ... \\
+```
+
+Example:
+
+```asm
+// This is a
+multiline comment \\
+```
+
+Comments are not executed as instructions.
+
+---
+
+# 🔀 Conditional Blocks
+
+`CMP` and `DEF` use square brackets to define their blocks.
+
+**Indentation is not required.**
+
+## CMP Example
+
+```asm
+cmp 01,02[
+ins 01,02 f
+]
+```
+
+The instruction marked with `f` executes when the comparison succeeds.
+
+The `f` tag is placed at the **end of the instruction**:
+
+```asm
+ins 01,02 f
+```
+
+---
+
+# 🧩 Function Blocks
+
+`DEF` can also use square brackets to contain the function's instructions.
+
+```asm
+def 06,0[
+ins 01,02 f
+]
+```
+
+The instructions inside the brackets form the function.
+
+---
+
+# 💻 Using the CIS8 Compiler
+
+CIS8 programs can be compiled using the **CIS8 compiler**.
+
+From a terminal, run:
+
+```bash
+python "C:/Path/to/your/compiler/location/CIS8C" (yourfile).cis8
+```
+
+Replace:
+
+```text
+C:/Path/to/your/compiler/location/CIS8C
+```
+
+with the location of your CIS8 compiler and:
+
+```text
+(yourfile).cis8
+```
+
+with the CIS8 source file you want to compile.
+
+### Example
+
+```bash
+python "C:/CIS8/CIS8C.py" program.cis8
+```
+
+If the compiler is configured correctly, the program will be compiled.
+
+---
+
+# 📝 Example CIS8 Program
+
+A simple CIS8 program can look like this:
+
+```asm
+/ Simple CIS8 program \
+
 ins 01,01
 
 add 01,02
 sub 01,02
 
 cmp 02,03[
-inc 05 f
+ins 01,05 f
 ]
+
+jmp 01,00
 ```
 
-Another simple example:
+This demonstrates:
 
-```asm
-ins 10,01
-ins 20,02
+* Comments
+* Memory insertion
+* Addition
+* Subtraction
+* Comparison
+* Conditional execution
+* Jumping
 
-add 01,02
-```
+---
 
-This initializes two memory locations and then performs an addition.
-
-## 9. Instruction Summary
-
-| Instruction | Purpose                          |
-| ----------- | -------------------------------- |
-| `INS`       | Store a value in memory          |
-| `ADD`       | Add values                       |
-| `SUB`       | Subtract values                  |
-| `INC`       | Increment a value                |
-| `DEC`       | Decrement a value                |
-| `MOV`       | Move a value                     |
-| `CMP`       | Compare values                   |
-| `JMP`       | Change program execution address |
-| `REL`       | Call a function                  |
-| `DEF`       | Define a function                |
-
-## 10. Design Philosophy
-
-CIS8 is intentionally small.
-
-Instead of providing many high-level features, CIS8 exposes basic operations that can be combined to create more complex behavior. This makes the language suitable for small processors, emulators, operating-system experiments, and other systems where keeping the instruction set simple is useful.
-
-CIS8 is also intended to serve as the low-level language to use the LIS8 CPU
-
-where the compiler has assigned `counter` to memory address `05`.
-
-## 11. File Format
-
-CIS8 source files can use the `.cis8` extension.
-
-Example:
+# 📌 Quick Reference
 
 ```text
-program.cis8
+ADD  A,B   Add two memory addresses
+SUB  A,B   Subtract two memory addresses
+INS  A,B   Insert A into memory address B
+MOV  A,B   Move memory address A to B
+CMP  A,B   Compare two memory addresses
+JMP  A,B   Set PC to A
+REL  A,B   Execute a function
+DEF  A,B   Create a function
 ```
 
-The CIS8 compiler converts the source code into the compiled representation used by the LIS8 processor.
+CIS8 is intended to provide a **small, straightforward assembly language for the LIS8 8-bit CPU**, while remaining simple enough to implement and experiment with in Scratch.
