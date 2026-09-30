@@ -300,21 +300,7 @@ CIS8 is intentionally small.
 
 Instead of providing many high-level features, CIS8 exposes basic operations that can be combined to create more complex behavior. This makes the language suitable for small processors, emulators, operating-system experiments, and other systems where keeping the instruction set simple is useful.
 
-CIS8 is also intended to serve as the low-level language underneath **CIS++**, allowing higher-level CIS++ programs to eventually be compiled into CIS8 instructions.
-
-### Example
-
-A CIS++ statement such as:
-
-```cpp
-counter = counter + 1
-```
-
-could eventually be translated into lower-level CIS8 instructions such as:
-
-```asm
-inc 05
-```
+CIS8 is also intended to serve as the low-level language to use the LIS8 CPU
 
 where the compiler has assigned `counter` to memory address `05`.
 
@@ -328,18 +314,4 @@ Example:
 program.cis8
 ```
 
-The CIS8 compiler converts the source code into the compiled representation used by the CIS8 processor.
-
-A typical workflow is:
-
-```text
-CIS++ source
-     ↓
-CIS8 assembly
-     ↓
-CIS8 compiler
-     ↓
-compiled program
-```
-
-CIS8 therefore acts as the low-level programming layer of the CIS software ecosystem.
+The CIS8 compiler converts the source code into the compiled representation used by the LIS8 processor.
